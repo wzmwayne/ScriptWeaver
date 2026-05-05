@@ -5,22 +5,23 @@
     <title>灵蝶 ScriptWeaver 功能演示</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
-        h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; }
-        pre { background: #f5f5f5; padding: 0.8rem; overflow-x: auto; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; margin-top: 2rem; }
+        pre { background: #f5f5f5; padding: 0.8rem; overflow-x: auto; border-radius: 4px; }
         code { font-size: 0.9em; }
         .note { color: #555; font-size: 0.9em; margin-top: 0.5rem; }
         .demo-area { margin: 1rem 0; padding: 0.8rem; background: #fafafa; border-radius: 4px; }
+        input, button { font-size: 1rem; padding: 0.4em 0.8em; margin: 0.25em 0; }
+        #prime-result { margin-top: 0.5rem; white-space: pre-wrap; background: #f0f0f0; padding: 0.5rem; border-radius: 4px; }
     </style>
 </head>
 <body>
     <h1>🦋 灵蝶 ScriptWeaver 功能演示</h1>
     <p>本页面仅展示<strong>如何声明</strong>灵蝶的各项能力，实际效果需要安装脚本并刷新。</p>
 
-    <!-- 1. 远程加载脚本 -->
+    <!-- 1. 远程脚本加载 -->
     <h2>1. 远程脚本加载</h2>
     <p>通过 meta 标签指定一个远程 JS 文件，灵蝶会自动拉取并执行。</p>
     <pre><code>&lt;meta name="tm-dynamic-script" content="https://你的域名/script.js"&gt;</code></pre>
-    <!-- 实际声明 -->
     <meta name="tm-dynamic-script" content="https://example.com/demo.js">
     <div class="note">↑ 此处已声明一个示例 URL（实际不存在，仅做演示）。</div>
 
@@ -31,7 +32,6 @@
     document.body.style.borderLeft = '5px solid #3498db';
     console.log('内嵌代码已执行');
 &lt;/script&gt;</code></pre>
-    <!-- 实际内嵌代码（安全模式 2+ 可执行） -->
     <script type="x-tm-inline">
         // 在灵蝶脚本运行后，这行代码会被执行
         document.body.style.borderLeft = '5px solid #3498db';
@@ -45,16 +45,15 @@
     <meta name="scriptweaver-permissions" content="xhr,storage,notification">
     <div class="note">↑ 已声明：跨域请求、本地存储、通知权限。查看右上角 Toast 提示。</div>
 
-    <!-- 4. 安全指令模式（模式1） -->
+    <!-- 4. 安全指令模式 -->
     <h2>4. 安全指令（强制模式）</h2>
     <p>将灵蝶设为模式 1，只解析 JSON 指令，杜绝任意 JS。适合静态内容注入。</p>
-    <pre><code>&lt;script type="x-tm-inline"&gt;
+    <pre><code>&lt;script type="x-tm-inline" data-mode="1"&gt;
 [
   {"op": "setText", "selector": "#instruction-demo", "text": "这是通过安全指令更新的文字"},
   {"op": "addClass", "selector": "#instruction-demo", "className": "demo-area"}
 ]
 &lt;/script&gt;</code></pre>
-    <!-- 实际安全指令示例（需模式1） -->
     <script type="x-tm-inline" data-mode="1">
     [
       {"op": "setText", "selector": "#instruction-demo", "text": "✅ 安全指令已生效（需模式1）"},
@@ -64,8 +63,50 @@
     <div id="instruction-demo" style="padding: 0.5rem; margin: 0.5rem 0;">原始文字</div>
     <div class="note">↑ 如果灵蝶处于强制模式，上面文字会被替换。</div>
 
-    <!-- 5. 环境自检区（纯页面逻辑，不依赖 GM） -->
-    <h2>5. 环境自检</h2>
+    <!-- 5. 交互示例：素数计算（由灵蝶注入） -->
+    <h2>5. 示例：素数计算（灵蝶内嵌代码）</h2>
+    <p>输入一个正整数，计算所有小于该数的素数。<br>此功能由灵蝶从内嵌代码加载并绑定事件，完全依赖灵蝶运行。</p>
+    <div class="demo-area">
+        <label for="prime-limit">上限：</label>
+        <input type="number" id="prime-limit" placeholder="例如 100" min="2" value="100" />
+        <button id="calc-prime-btn">开始计算</button>
+        <div id="prime-result" style="margin-top:0.5rem;">点击按钮进行计算（若未反应，请检查灵蝶是否注入）</div>
+    </div>
+
+    <!-- 灵蝶内嵌代码：素数计算与事件绑定 -->
+    <script type="x-tm-inline">
+        // 这个代码块仅在灵蝶脚本激活后执行
+        document.getElementById('calc-prime-btn').addEventListener('click', function() {
+            let limit = parseInt(document.getElementById('prime-limit').value);
+            const resultDiv = document.getElementById('prime-result');
+            if (isNaN(limit) || limit < 2) {
+                resultDiv.textContent = '请输入大于 1 的整数';
+                return;
+            }
+            // 埃拉托斯特尼筛法
+            let sieve = new Array(limit + 1).fill(true);
+            sieve[0] = sieve[1] = false;
+            for (let i = 2; i * i <= limit; i++) {
+                if (sieve[i]) {
+                    for (let j = i * i; j <= limit; j += i) {
+                        sieve[j] = false;
+                    }
+                }
+            }
+            let primes = [];
+            for (let i = 2; i <= limit; i++) {
+                if (sieve[i]) primes.push(i);
+            }
+            resultDiv.textContent = '小于 ' + limit + ' 的素数：' + primes.join(', ');
+        });
+    </script>
+    <div class="note">
+        ✅ 若灵蝶脚本正常运行，点击按钮将输出素数。<br>
+        ❌ 若无反应，说明灵蝶未注入到本页面（请检查 Tampermonkey 设置或切换为 HTTP 方式打开）。
+    </div>
+
+    <!-- 6. 环境自检区 -->
+    <h2>6. 环境自检</h2>
     <p>检查浏览器是否支持灵蝶所需的基础能力。</p>
     <div id="self-check"></div>
     <script>
@@ -90,7 +131,7 @@
     </script>
 
     <p style="margin-top: 2rem; font-size: 0.9em; color: #666;">
-        💡 <strong>提示</strong>：以上所有功能均由 <strong>ScriptWeaver 脚本</strong> 驱动。<br>
+        💡 <strong>提示</strong>：以上所有动态功能均由 <strong>ScriptWeaver 脚本</strong> 驱动。<br>
         请确保已安装 Tampermonkey 并添加了最新版灵蝶脚本。
     </p>
 </body>
