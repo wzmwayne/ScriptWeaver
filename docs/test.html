@@ -84,8 +84,51 @@
     <h2>5. 远程脚本加载（演示）</h2>
     <p>页面头部已声明一个远程脚本链接，灵蝶会自动尝试加载并执行。由于该地址不存在，你会看到加载失败的 Toast 提示（调试模式下）。</p>
 
+    <!-- ===== GM API 演示（新增） ===== -->
+    <h2>6. GM API 演示</h2>
+    <p>以下按钮调用 <strong>灵蝶暴露的 GM 函数</strong>，请确保已安装 7.3 版本。</p>
+
+    <!-- 存储读写 -->
+    <div class="demo-box">
+        <strong>📦 存储读写</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <input id="gm-store-input" type="text" placeholder="输入要保存的值" />
+            <button id="gm-store-save">保存</button>
+            <button id="gm-store-load">读取</button>
+        </div>
+        <p>上次保存的值：<span id="gm-store-result" style="font-weight: bold;">(空)</span></p>
+    </div>
+
+    <!-- 桌面通知 -->
+    <div class="demo-box">
+        <strong>🔔 桌面通知</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <input id="gm-notify-text" type="text" placeholder="通知内容" value="你好，来自灵蝶！" />
+            <button id="gm-notify-btn">发送通知</button>
+        </div>
+        <p class="note">首次调用可能需要浏览器授予通知权限。</p>
+    </div>
+
+    <!-- 打开新标签 -->
+    <div class="demo-box">
+        <strong>📂 打开新标签页</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <input id="gm-tab-url" type="text" placeholder="输入网址" value="https://github.com/wzmwayne/ScriptWeaver" />
+            <button id="gm-tab-btn">打开</button>
+        </div>
+        <p class="note">使用 GM_openInTab 会在新标签页中打开链接（不会离开当前页面）。</p>
+    </div>
+
+    <!-- 跨域请求 -->
+    <div class="demo-box">
+        <strong>🌐 跨域请求（JSONPlaceholder）</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <button id="gm-xhr-btn">请求测试</button>
+        </div>
+        <pre id="gm-xhr-result" style="max-height: 150px; overflow-y: auto;">等待点击…</pre>
+    </div>
+
     <!-- ===== 内嵌代码块集合（所有交互逻辑） ===== -->
-    <!-- 各功能独立一个块，灵蝶会依次执行 -->
 
     <!-- 块1：中英文切换 -->
     <script type="x-tm-inline">
@@ -120,7 +163,6 @@
                 setLang(this.getAttribute('data-lang'));
             });
         });
-        // 默认中文
         setLang('zh');
     </script>
 
@@ -177,6 +219,80 @@
             document.getElementById('color-box').style.backgroundColor = hex;
             document.getElementById('color-code').textContent = hex;
         });
+    </script>
+
+    <!-- 块6：GM API 演示（新增） -->
+    <script type="x-tm-inline">
+        // 检查 GM 函数是否可用
+        if (typeof GM_setValue === 'undefined') {
+            document.querySelectorAll('.demo-box').forEach(box => {
+                if (box.querySelector('#gm-store-save')) {
+                    box.innerHTML = '<p style="color: red;">❌ GM API 未暴露，请使用 ScriptWeaver 7.3 版本，并确认 Tampermonkey 已启用。</p>';
+                }
+            });
+        } else {
+            // --- 存储读写 ---
+            document.getElementById('gm-store-save').addEventListener('click', () => {
+                const val = document.getElementById('gm-store-input').value;
+                GM_setValue('demoKey', val);
+                alert('已保存：' + val);
+            });
+            document.getElementById('gm-store-load').addEventListener('click', () => {
+                const val = GM_getValue('demoKey', '没有保存的值');
+                document.getElementById('gm-store-result').textContent = val;
+            });
+            // 页面加载时读取一次
+            const saved = GM_getValue('demoKey', null);
+            if (saved !== null) document.getElementById('gm-store-result').textContent = saved;
+
+            // --- 桌面通知 ---
+            document.getElementById('gm-notify-btn').addEventListener('click', () => {
+                const text = document.getElementById('gm-notify-text').value || '灵蝶通知';
+                if (typeof GM_notification === 'function') {
+                    GM_notification(text, 'ScriptWeaver 演示');
+                } else {
+                    alert('GM_notification 不可用');
+                }
+            });
+
+            // --- 打开新标签 ---
+            document.getElementById('gm-tab-btn').addEventListener('click', () => {
+                let url = document.getElementById('gm-tab-url').value.trim();
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                if (typeof GM_openInTab === 'function') {
+                    GM_openInTab(url, { active: true });
+                } else {
+                    window.open(url, '_blank');
+                }
+            });
+
+            // --- 跨域请求 ---
+            document.getElementById('gm-xhr-btn').addEventListener('click', () => {
+                const result = document.getElementById('gm-xhr-result');
+                result.textContent = '请求中…';
+                if (typeof GM_xmlhttpRequest !== 'function') {
+                    result.textContent = '❌ GM_xmlhttpRequest 不可用';
+                    return;
+                }
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: 'https://jsonplaceholder.typicode.com/posts/1',
+                    onload: function(res) {
+                        try {
+                            const data = JSON.parse(res.responseText);
+                            result.textContent = JSON.stringify(data, null, 2);
+                        } catch(e) {
+                            result.textContent = '解析失败：' + e.message;
+                        }
+                    },
+                    onerror: function(e) {
+                        result.textContent = '请求错误';
+                    }
+                });
+            });
+        }
     </script>
 
     <p style="margin-top: 2rem; color: #888; font-size: 0.9em;">
