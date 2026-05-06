@@ -107,6 +107,24 @@
 &lt;/script&gt;</code></pre>
 ```
 
+### 🧪 在灵蝶代码中使用 GM API
+
+灵蝶 v7.3+ 已将常用 Tampermonkey 高级函数暴露到页面全局。  
+在 `<script type="x-tm-inline">` 中可直接调用，无需额外声明。
+
+#### 可用函数
+`GM_xmlhttpRequest` · `GM_setValue` · `GM_getValue` · `GM_notification` · `GM_openInTab` · `GM_addStyle` · `GM_info`
+
+#### 示例：存储用户设置
+```html
+<script type="x-tm-inline">
+  // 保存主题偏好
+  GM_setValue('theme', 'dark');
+  // 读取
+  const savedTheme = GM_getValue('theme', 'light');
+  console.log(savedTheme);
+</script>
+
 ---
 
 🔀 将现有 JS 迁移至灵蝶
