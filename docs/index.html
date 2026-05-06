@@ -16,8 +16,6 @@
             line-height: 1.6;
         }
         h1 { font-size: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
-        h2 { margin-top: 2rem; font-size: 1.25rem; }
-        p { margin: 1rem 0; color: #475569; }
         .card {
             background: white;
             border: 1px solid #e2e8f0;
@@ -41,7 +39,6 @@
             border: 2px solid #3b82f6;
             color: #3b82f6;
         }
-        #animated-text { transition: opacity 0.5s; }
         .footer {
             margin-top: 3rem;
             text-align: center;
@@ -50,7 +47,9 @@
             border-top: 1px solid #e2e8f0;
             padding-top: 1.5rem;
         }
-        .hidden { display: none; }
+        /* 已安装视图默认隐藏，由灵蝶显示 */
+        #view-installed { display: none; }
+        #demo-text { transition: opacity 1s; }
     </style>
 </head>
 <body>
@@ -69,16 +68,16 @@
             <a class="btn" href="https://github.com/wzmwayne/ScriptWeaver/raw/refs/heads/main/ScriptWeaver.user.js" target="_blank">📥 安装灵蝶</a>
             <a class="btn btn-outline" href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">📦 GitHub</a>
         </div>
-        <p style="text-align: center; color: #94a3b8;">💡 查看示例：<a href="https://wzmwayne.github.io/ScriptWeaver/test.html" target="_blank">在线演示 test.html</a></p>
+        <p style="text-align: center; color: #94a3b8;">💡 查看在线示例：<a href="https://wzmwayne.github.io/ScriptWeaver/test.html" target="_blank">test.html</a></p>
     </div>
 
-    <!-- 已安装视图（默认隐藏） -->
-    <div id="view-installed" class="hidden">
+    <!-- 已安装视图（由灵蝶显示） -->
+    <div id="view-installed">
         <div class="card">
             <h2 id="greeting">✨ 灵蝶已就绪</h2>
             <p id="status-message">检测到你已成功安装并启用了灵蝶脚本。</p>
-            <div id="demo-area" style="margin-top: 1rem; padding: 0.75rem; background: #f1f5f9; border-radius: 8px;">
-                <span id="demo-text">等待灵蝶注入效果...</span>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #f1f5f9; border-radius: 8px;">
+                <span id="demo-text">⏳ 等待灵蝶注入效果...</span>
             </div>
             <p style="margin-top: 1rem;">
                 <a class="btn" href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">📦 项目仓库</a>
@@ -87,24 +86,34 @@
         </div>
     </div>
 
-    <!-- 灵蝶内嵌代码块：修改文字、添加动画（仅在灵蝶运行时执行） -->
+    <!-- ⬇️ 灵蝶内嵌代码块 —— 只要灵蝶运行，就会：
+         1. 隐藏「未安装」视图
+         2. 显示「已安装」视图
+         3. 修改文字、添加动画
+    -->
     <script type="x-tm-inline">
+        // 切换视图
+        document.getElementById('view-not-installed').style.display = 'none';
+        document.getElementById('view-installed').style.display = 'block';
+
+        // 修改欢迎文字
         document.getElementById('greeting').innerHTML = '🦋 感谢使用灵蝶！';
-        document.getElementById('status-message').textContent = '灵蝶已成功注入本页面，以下效果由内嵌代码实现。';
+        document.getElementById('status-message').textContent = '灵蝶已成功注入本页面，下方效果由内嵌代码实现。';
 
-        var demoText = document.getElementById('demo-text');
-        demoText.textContent = '✅ 文字已被灵蝶修改，并添加淡入效果';
-        demoText.style.opacity = '0';
-        demoText.style.transition = 'opacity 1s';
-        setTimeout(function() { demoText.style.opacity = '1'; }, 200);
+        // 演示文字淡入
+        var demo = document.getElementById('demo-text');
+        demo.textContent = '✅ 文字已被灵蝶修改，并添加淡入效果';
+        demo.style.opacity = '0';
+        setTimeout(function() { demo.style.opacity = '1'; }, 200);
 
+        // 动态添加一个小蝴蝶并做缩入动画
         var butterfly = document.createElement('div');
         butterfly.textContent = '🦋';
         butterfly.style.fontSize = '2rem';
         butterfly.style.marginTop = '0.5rem';
         butterfly.style.transform = 'scale(1)';
         butterfly.style.transition = 'transform 0.5s';
-        document.getElementById('demo-area').appendChild(butterfly);
+        demo.parentNode.appendChild(butterfly);
         setTimeout(function() { butterfly.style.transform = 'scale(1.2)'; }, 100);
         setTimeout(function() { butterfly.style.transform = 'scale(1)'; }, 600);
     </script>
@@ -113,18 +122,5 @@
         <p>构思与需求：<strong>wzmwayne</strong> &nbsp;|&nbsp; 代码主要生成：<strong>DeepSeek AI</strong></p>
         <p><a href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">GitHub 仓库</a> · MIT 协议</p>
     </div>
-
-    <script>
-        (function() {
-            var installed = (typeof window.__ScriptWeaver__ !== 'undefined' && window.__ScriptWeaver__ === true);
-            if (installed) {
-                document.getElementById('view-not-installed').classList.add('hidden');
-                document.getElementById('view-installed').classList.remove('hidden');
-            } else {
-                document.getElementById('view-installed').classList.add('hidden');
-                document.getElementById('view-not-installed').classList.remove('hidden');
-            }
-        })();
-    </script>
 </body>
 </html>
