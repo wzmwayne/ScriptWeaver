@@ -14,8 +14,9 @@
 灵蝶（ScriptWeaver）可以：
 - 在 **纯静态 HTML** 中执行任意 JavaScript，无需后端
 - 通过页面的 `<meta>` 标签或自定义 `<script type="x-tm-inline">` 引入动态逻辑
-- 支持 **安全指令（JSON）** 或 **原生 JS**（当前版本精简为原生 JS 模式）
-- 内置 **调试模式**，右上角 Toast 堆叠显示执行过程
+- 支持 **内嵌代码立即执行**（绕过页面 CSP 限制，使用 GM.addElement 安全注入）
+- 内置 **可拖拽调试窗口**，完整记录执行过程与代码内容
+- 智能扫描页面中 **以文本形式呈现的灵蝶代码**，并提供一键执行按钮
 - 借助 Tampermonkey 的 `GM_xmlhttpRequest` 可实现无跨域限制的远程脚本加载
 
 **一句话：**  
@@ -33,6 +34,7 @@
 
 👉 **[📥 安装灵蝶](https://github.com/wzmwayne/ScriptWeaver/raw/refs/heads/main/ScriptWeaver.user.js)**  
 
+（也可在 [Releases](https://github.com/wzmwayne/ScriptWeaver/releases) 中下载）
 
 ### 3. 开始使用
 在你的 HTML 页面中加入：
@@ -45,7 +47,7 @@
 </script>
 ```
 
-刷新页面，如果灵蝶脚本已启用，你会看到页面出现蓝色边框，右上角出现 Toast 提示（调试模式下）。
+刷新页面，如果灵蝶脚本已启用，你会看到页面出现蓝色边框，右上角出现可拖拽调试窗口（调试模式开启时）。
 
 ---
 
@@ -76,7 +78,8 @@
 
 · 支持多个块，按顺序执行。
 · 块与块之间可共享变量（作用域相同）。
-· 适用于页面专属的交互逻辑。
+· 适合页面专属的交互逻辑。
+· 执行引擎使用 GM.addElement 注入 <script> 标签，不受页面 CSP 限制。
 
 2. 远程脚本加载
 
@@ -92,22 +95,17 @@
 · 突破浏览器同源限制（需脚本中 @grant GM_xmlhttpRequest 和 @connect *）。
 · 内嵌代码优先级更高：如果页面同时存在内嵌块，远程加载将被忽略。
 
-3. 权限声明（可选）
+3. 文本嵌入式代码
 
-页面可以告知灵蝶自己需要哪些 GM 高级功能，脚本会在右上角 Toast 提示是否满足：
+如果在页面的正文中写出了完整的灵蝶代码示例（例如在 <pre> 或 <code> 内），灵蝶会主动识别并在代码旁显示 「🦋 可执行」 按钮，点击即可运行。
+
+示例：
 
 ```html
-<meta name="scriptweaver-permissions" content="xhr,storage,notification">
+<pre><code>&lt;script type="x-tm-inline"&gt;
+  alert('Hello from text code!');
+&lt;/script&gt;</code></pre>
 ```
-
-支持的权限简称：
-
-· xhr → GM_xmlhttpRequest（跨域请求）
-· storage → GM_setValue / GM_getValue
-· notification → GM_notification
-· opentab → GM_openInTab
-· info → GM_info
-· addstyle → GM_addStyle
 
 ---
 
@@ -140,13 +138,14 @@
 
 ```javascript
 const CONFIG = {
-    debug: true,              // true = 显示详细执行过程 Toast；false = 仅显示“网站正在通过脚本运行 JS”
-    toastDuration: 4000,      // Toast 显示毫秒数，0 为常驻
+    debug: true,              // true = 可拖拽调试窗口；false = 极简 Toast 堆叠
+    toastDuration: 4000,      // Toast 显示毫秒数（debug: false 时生效）
+    scanTextForCode: true,    // 是否扫描页面中的文本嵌入式代码
 };
 ```
 
-· 调试模式（debug: true）：每个内嵌块、远程脚本的加载与执行都会在右上角生成独立的 Toast，方便追踪。
-· 非调试模式：每次执行 JS 时仅显示一条简洁的提示，多次执行会堆叠。
+· 调试模式 (debug: true)：右上角出现可拖拽、可调整大小的调试窗口，实时输出完整代码和执行状态。
+· 非调试模式：仅显示简洁的右上角 Toast 提示，多次执行会堆叠。
 
 ---
 
@@ -168,6 +167,26 @@ const CONFIG = {
 
 ---
 
+💡 推荐：在网页中加入“灵蝶未安装提示”
+
+为了让没有安装灵蝶的访客也能了解动态功能，可以在页面中添加以下代码（独立于灵蝶，纯静态检测）：
+
+```html
+<div id="sw-install-hint" style="position:fixed;bottom:20px;right:20px;background:#2c3e50;color:#ecf0f1;padding:10px 16px;font-size:14px;z-index:9999;display:none;">
+  ⚡ 本页面有动态功能，<a href="https://github.com/wzmwayne/ScriptWeaver" target="_blank" style="color:#3b82f6;">安装灵蝶</a> 后体验更好。
+</div>
+<script>
+  // 检测灵蝶是否运行（需要脚本设置 window.__ScriptWeaver__ = true）
+  if (!window.__ScriptWeaver__) {
+    document.getElementById('sw-install-hint').style.display = 'block';
+  }
+</script>
+```
+
+该提示会在访客未安装灵蝶时自动显示，引导安装。
+
+---
+
 🤝 贡献与反馈
 
 本项目由 wzmwayne 提供构思与需求，DeepSeek AI 辅助生成代码。
@@ -177,23 +196,4 @@ const CONFIG = {
 
 ---
 
-<!-- 🦋 实验性：嵌入式灵蝶代码块
-     如果你已安装灵蝶并浏览本 README 的 HTML 版本，
-     下面的块可能会被执行（浏览器环境下，Markdown 可能被渲染为 HTML）
--->
-
-<script type="x-tm-inline">
-  // 灵蝶实验：在 README 中嵌入代码
-  // 若灵蝶运行且页面允许，会在控制台留下痕迹
-  console.log('🦋 灵蝶实验性注入 - 来自 README.md');
-  // 你也可以在页面上添加一个微小的提示（仅当 Markdown 按 HTML 解析时可见）
-  (function() {
-    var el = document.createElement('div');
-    el.style.cssText = 'position:fixed;bottom:10px;left:10px;background:#2c3e50;color:#ecf0f1;padding:4px 10px;border-radius:4px;font-size:12px;z-index:9999';
-    el.textContent = '🦋 灵蝶已检测到 README 注入';
-    document.body.appendChild(el);
-  })();
-</script>
-
 🦋 让静态网页，轻舞飞扬。
-
