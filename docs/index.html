@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptWeaver · 灵蝶</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            color: #1e293b;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+        h1 { font-size: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h2 { margin-top: 2rem; font-size: 1.25rem; }
+        p { margin: 1rem 0; color: #475569; }
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        #animated-text { transition: opacity 0.5s; }
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🦋 ScriptWeaver <span style="font-size:0.8em; color:#64748b;">灵蝶</span></h1>
+
+    <!-- 未安装视图（默认显示） -->
+    <div id="view-not-installed">
+        <div class="card">
+            <h2>🚀 开始使用</h2>
+            <p>灵蝶是一个轻量级的 Tampermonkey 脚本，能为静态网页注入动态能力。</p>
+            <p><strong>安装只需两步：</strong></p>
+            <ol>
+                <li>安装 <a href="https://www.tampermonkey.net/" target="_blank">Tampermonkey 扩展</a></li>
+                <li>点击下方按钮安装灵蝶脚本</li>
+            </ol>
+            <a class="btn" href="https://github.com/wzmwayne/ScriptWeaver/raw/refs/heads/main/ScriptWeaver.user.js" target="_blank">📥 安装灵蝶</a>
+            <a class="btn btn-outline" href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">📦 GitHub</a>
+        </div>
+        <p style="text-align: center; color: #94a3b8;">💡 查看示例：<a href="https://wzmwayne.github.io/ScriptWeaver/test.html" target="_blank">在线演示 test.html</a></p>
+    </div>
+
+    <!-- 已安装视图（默认隐藏） -->
+    <div id="view-installed" class="hidden">
+        <div class="card">
+            <h2 id="greeting">✨ 灵蝶已就绪</h2>
+            <p id="status-message">检测到你已成功安装并启用了灵蝶脚本。</p>
+            <div id="demo-area" style="margin-top: 1rem; padding: 0.75rem; background: #f1f5f9; border-radius: 8px;">
+                <span id="demo-text">等待灵蝶注入效果...</span>
+            </div>
+            <p style="margin-top: 1rem;">
+                <a class="btn" href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">📦 项目仓库</a>
+                <a class="btn btn-outline" href="https://wzmwayne.github.io/ScriptWeaver/test.html" target="_blank">🧪 在线演示</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 灵蝶内嵌代码块：修改文字、添加动画（仅在灵蝶运行时执行） -->
+    <script type="x-tm-inline">
+        document.getElementById('greeting').innerHTML = '🦋 感谢使用灵蝶！';
+        document.getElementById('status-message').textContent = '灵蝶已成功注入本页面，以下效果由内嵌代码实现。';
+
+        var demoText = document.getElementById('demo-text');
+        demoText.textContent = '✅ 文字已被灵蝶修改，并添加淡入效果';
+        demoText.style.opacity = '0';
+        demoText.style.transition = 'opacity 1s';
+        setTimeout(function() { demoText.style.opacity = '1'; }, 200);
+
+        var butterfly = document.createElement('div');
+        butterfly.textContent = '🦋';
+        butterfly.style.fontSize = '2rem';
+        butterfly.style.marginTop = '0.5rem';
+        butterfly.style.transform = 'scale(1)';
+        butterfly.style.transition = 'transform 0.5s';
+        document.getElementById('demo-area').appendChild(butterfly);
+        setTimeout(function() { butterfly.style.transform = 'scale(1.2)'; }, 100);
+        setTimeout(function() { butterfly.style.transform = 'scale(1)'; }, 600);
+    </script>
+
+    <div class="footer">
+        <p>构思与需求：<strong>wzmwayne</strong> &nbsp;|&nbsp; 代码主要生成：<strong>DeepSeek AI</strong></p>
+        <p><a href="https://github.com/wzmwayne/ScriptWeaver" target="_blank">GitHub 仓库</a> · MIT 协议</p>
+    </div>
+
+    <script>
+        (function() {
+            var installed = (typeof window.__ScriptWeaver__ !== 'undefined' && window.__ScriptWeaver__ === true);
+            if (installed) {
+                document.getElementById('view-not-installed').classList.add('hidden');
+                document.getElementById('view-installed').classList.remove('hidden');
+            } else {
+                document.getElementById('view-installed').classList.add('hidden');
+                document.getElementById('view-not-installed').classList.remove('hidden');
+            }
+        })();
+    </script>
+</body>
+</html>
