@@ -1,0 +1,8 @@
+{
+  "roots": {
+    "@sw": "https://wzmwayne.github.io/ScriptWeaver/plugins/"
+  },
+  "plugins": {
+    "@sw/dark-mode": "ui/dark-mode.js"
+  }
+}
