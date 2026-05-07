@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 远程脚本演示（指向一个不存在的 URL，灵蝶会提示加载失败） -->
+    <!-- 远程脚本演示（指向不存在的 URL） -->
     <meta name="tm-dynamic-script" content="https://example.com/remote-demo.js">
-    <!-- 权限声明示例（灵蝶简化版会忽略，但可保留） -->
+    <!-- 权限声明 -->
     <meta name="scriptweaver-permissions" content="xhr,storage">
     <title>灵蝶 ScriptWeaver 功能演示</title>
     <style>
@@ -23,7 +23,6 @@
         .note { color: #555; font-size: 0.9em; margin-top: 0.5rem; }
         .lang-btn { margin-right: 0.5rem; }
         #theme-toggle { float: right; }
-        /* 深色模式类（由灵蝶注入的 JS 动态添加） */
         body.dark { background: #1e1e1e; color: #eee; }
         body.dark .demo-box { background: #2a2a2a; }
         body.dark pre { background: #333; color: #ddd; }
@@ -41,7 +40,7 @@
     <p>本页面所有动态功能均由 <strong>ScriptWeaver 脚本</strong> 注入的内嵌 JS 驱动。<br>
        如果功能无反应，请确认已安装 Tampermonkey 并启用了灵蝶脚本。</p>
 
-    <!-- ===== 中英文切换 ===== -->
+    <!-- 1. 中英文切换 -->
     <h2>1. 中英文切换</h2>
     <div class="demo-box">
         <p>
@@ -58,14 +57,14 @@
         <div class="note">切换语言按钮由灵蝶内嵌代码绑定，文本使用 <code>data-i18n</code> 属性标记。</div>
     </div>
 
-    <!-- ===== 实时时钟 ===== -->
+    <!-- 2. 实时时钟 -->
     <h2>2. 实时时钟</h2>
     <div class="demo-box">
         <p>当前时间：<span id="clock">--:--:--</span></p>
         <div class="note">时钟每秒更新，由内嵌代码使用 setInterval 实现。</div>
     </div>
 
-    <!-- ===== 素数计算 ===== -->
+    <!-- 3. 素数计算 -->
     <h2>3. 素数计算</h2>
     <div class="demo-box">
         <label for="prime-limit">上限：</label>
@@ -74,7 +73,7 @@
         <div id="prime-result" style="margin-top:0.5rem; white-space: pre-wrap;">点击按钮计算（若未反应，请检查灵蝶注入）</div>
     </div>
 
-    <!-- ===== 随机颜色生成器 ===== -->
+    <!-- 4. 随机颜色生成器 -->
     <h2>4. 随机颜色生成器</h2>
     <div class="demo-box">
         <button id="color-btn">生成随机颜色</button>
@@ -82,15 +81,14 @@
         <p id="color-code" style="margin-top: 0.3rem;">#3498db</p>
     </div>
 
-    <!-- ===== 远程脚本加载演示 ===== -->
+    <!-- 5. 远程脚本加载演示 -->
     <h2>5. 远程脚本加载（演示）</h2>
     <p>页面头部已声明一个远程脚本链接，灵蝶会自动尝试加载并执行。由于该地址不存在，你会看到加载失败的 Toast 提示（调试模式下）。</p>
 
-    <!-- ===== GM API 演示 ===== -->
+    <!-- 6. GM API 演示 -->
     <h2>6. GM API 演示</h2>
     <p>以下按钮调用 <strong>灵蝶暴露的 GM 函数</strong>，请确保已安装 7.3+ 版本。</p>
 
-    <!-- 存储读写 -->
     <div class="demo-box">
         <strong>📦 存储读写</strong>
         <div class="row" style="margin: 0.5rem 0;">
@@ -101,7 +99,6 @@
         <p>上次保存的值：<span id="gm-store-result" style="font-weight: bold;">(空)</span></p>
     </div>
 
-    <!-- 桌面通知 -->
     <div class="demo-box">
         <strong>🔔 桌面通知</strong>
         <div class="row" style="margin: 0.5rem 0;">
@@ -111,17 +108,15 @@
         <p class="note">首次调用可能需要浏览器授予通知权限。</p>
     </div>
 
-    <!-- 打开新标签 -->
     <div class="demo-box">
         <strong>📂 打开新标签页</strong>
         <div class="row" style="margin: 0.5rem 0;">
             <input id="gm-tab-url" type="text" placeholder="输入网址" value="https://github.com/wzmwayne/ScriptWeaver" />
             <button id="gm-tab-btn">打开</button>
         </div>
-        <p class="note">使用 GM_openInTab 会在新标签页中打开链接（不会离开当前页面）。</p>
+        <p class="note">使用 GM_openInTab 会在新标签页中打开链接。</p>
     </div>
 
-    <!-- 跨域请求 -->
     <div class="demo-box">
         <strong>🌐 跨域请求（JSONPlaceholder）</strong>
         <div class="row" style="margin: 0.5rem 0;">
@@ -130,7 +125,7 @@
         <pre id="gm-xhr-result" style="max-height: 150px; overflow-y: auto;">等待点击…</pre>
     </div>
 
-    <!-- ===== 7. 插件市场 & 动态加载（增强版） ===== -->
+    <!-- 7. 插件市场 & 动态加载 -->
     <h2>7. 插件市场 &amp; 动态加载</h2>
     <div class="demo-box">
         <strong>📡 获取插件列表</strong>
@@ -149,94 +144,93 @@
         <p id="plugin-load-status" style="margin-top: 0.5rem;">等待操作…</p>
     </div>
 
-    <!-- ===== 内嵌代码块集合（所有交互逻辑） ===== -->
+    <!-- 8. 跨页面遥控（新增） -->
+    <h2>8. 跨页面遥控 🎮</h2>
+    <p>使用 <code>SW_crossExec</code> 或 <code>SW_crossLoadPlugin</code> 向其他已安装灵蝶的页面注入代码或插件。<br>
+       发起前会弹出全屏确认框，确保安全。需要灵蝶 v7.7 及以上版本。</p>
 
+    <div class="demo-box">
+        <strong>📨 注入代码</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <label>目标模式：</label>
+            <input id="cross-target-code" type="text" placeholder="* 或 https://example.com/**" value="*" />
+        </div>
+        <textarea id="cross-code" rows="3" style="width:100%; padding:0.5em; margin-top:0.5rem;">document.body.style.border = '3px solid red';</textarea>
+        <button id="cross-exec-btn" style="margin-top:0.5rem;">发送跨页代码</button>
+        <p style="margin-top:0.5rem;">
+            回调状态：<span id="cross-exec-status">等待操作…</span>
+        </p>
+    </div>
+
+    <div class="demo-box">
+        <strong>📦 注入插件</strong>
+        <div class="row" style="margin: 0.5rem 0;">
+            <label>插件别名：</label>
+            <input id="cross-plugin-alias" type="text" placeholder="@sw/dark-mode" value="@sw/dark-mode" />
+            <label>目标模式：</label>
+            <input id="cross-target-plugin" type="text" placeholder="*" value="*" />
+        </div>
+        <button id="cross-plugin-btn" style="margin-top:0.5rem;">发送跨页插件</button>
+        <p style="margin-top:0.5rem;">
+            回调状态：<span id="cross-plugin-status">等待操作…</span>
+        </p>
+    </div>
+
+    <p style="margin-top: 2rem; color: #888; font-size: 0.9em;">
+        💡 <strong>提示：</strong> 打开 Tampermonkey 中灵蝶脚本的<strong>调试模式</strong>（<code>debug: true</code>），你将在右上角看到每个代码块执行时的详细过程。
+    </p>
+
+    <!-- 内嵌代码块 -->
     <!-- 块1：中英文切换 -->
     <script type="x-tm-inline">
         const i18n = {
-            zh: {
-                greeting: '欢迎使用灵蝶',
-                description: '这是一个动态脚本注入引擎，可以给你的网页添加交互功能。',
-                feat1: '内嵌 JS 执行',
-                feat2: '远程脚本加载',
-                feat3: '调试模式 Toast 堆叠'
-            },
-            en: {
-                greeting: 'Welcome to ScriptWeaver',
-                description: 'A dynamic script injection engine that adds interactive features to your webpage.',
-                feat1: 'Inline JS execution',
-                feat2: 'Remote script loading',
-                feat3: 'Debug mode with stacked toasts'
-            }
+            zh: { greeting: '欢迎使用灵蝶', description: '这是一个动态脚本注入引擎，可以给你的网页添加交互功能。', feat1: '内嵌 JS 执行', feat2: '远程脚本加载', feat3: '调试模式 Toast 堆叠' },
+            en: { greeting: 'Welcome to ScriptWeaver', description: 'A dynamic script injection engine that adds interactive features to your webpage.', feat1: 'Inline JS execution', feat2: 'Remote script loading', feat3: 'Debug mode with stacked toasts' }
         };
         let currentLang = 'zh';
         function setLang(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (i18n[lang] && i18n[lang][key]) {
-                    el.textContent = i18n[lang][key];
-                }
+                if (i18n[lang] && i18n[lang][key]) el.textContent = i18n[lang][key];
             });
         }
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                setLang(this.getAttribute('data-lang'));
-            });
-        });
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', function() { setLang(this.getAttribute('data-lang')); }));
         setLang('zh');
     </script>
 
     <!-- 块2：深色模式切换 -->
     <script type="x-tm-inline">
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark');
-        });
+        document.getElementById('theme-toggle').addEventListener('click', () => document.body.classList.toggle('dark'));
     </script>
 
     <!-- 块3：实时时钟 -->
     <script type="x-tm-inline">
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString();
-        }
+        function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString(); }
         updateClock();
         setInterval(updateClock, 1000);
     </script>
 
     <!-- 块4：素数计算 -->
     <script type="x-tm-inline">
-        document.getElementById('calc-prime-btn').addEventListener('click', function() {
+        document.getElementById('calc-prime-btn').addEventListener('click', () => {
             const limit = parseInt(document.getElementById('prime-limit').value);
-            const resultDiv = document.getElementById('prime-result');
-            if (isNaN(limit) || limit < 2) {
-                resultDiv.textContent = '请输入大于 1 的整数';
-                return;
-            }
-            const sieve = new Array(limit + 1).fill(true);
-            sieve[0] = sieve[1] = false;
-            for (let i = 2; i * i <= limit; i++) {
-                if (sieve[i]) {
-                    for (let j = i * i; j <= limit; j += i) {
-                        sieve[j] = false;
-                    }
-                }
-            }
+            const res = document.getElementById('prime-result');
+            if (isNaN(limit) || limit < 2) { res.textContent = '请输入大于1的整数'; return; }
+            const sieve = new Array(limit+1).fill(true);
+            sieve[0]=sieve[1]=false;
+            for (let i=2; i*i<=limit; i++) if (sieve[i]) for (let j=i*i; j<=limit; j+=i) sieve[j]=false;
             const primes = [];
-            for (let i = 2; i <= limit; i++) {
-                if (sieve[i]) primes.push(i);
-            }
-            resultDiv.textContent = '小于 ' + limit + ' 的素数：' + primes.join(', ');
+            for (let i=2; i<=limit; i++) if (sieve[i]) primes.push(i);
+            res.textContent = '小于 ' + limit + ' 的素数：' + primes.join(', ');
         });
     </script>
 
-    <!-- 块5：随机颜色生成器 -->
+    <!-- 块5：随机颜色 -->
     <script type="x-tm-inline">
-        document.getElementById('color-btn').addEventListener('click', function() {
-            const r = Math.floor(Math.random() * 256);
-            const g = Math.floor(Math.random() * 256);
-            const b = Math.floor(Math.random() * 256);
-            const hex = '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+        document.getElementById('color-btn').addEventListener('click', () => {
+            const r = Math.floor(Math.random()*256), g = Math.floor(Math.random()*256), b = Math.floor(Math.random()*256);
+            const hex = '#' + [r,g,b].map(c => c.toString(16).padStart(2,'0')).join('');
             document.getElementById('color-box').style.backgroundColor = hex;
             document.getElementById('color-code').textContent = hex;
         });
@@ -244,144 +238,115 @@
 
     <!-- 块6：GM API 演示 -->
     <script type="x-tm-inline">
-        // 检查 GM 函数是否可用
         if (typeof GM_setValue === 'undefined') {
-            document.querySelectorAll('.demo-box').forEach(box => {
-                if (box.querySelector('#gm-store-save')) {
-                    box.innerHTML = '<p style="color: red;">❌ GM API 未暴露，请使用 ScriptWeaver 7.3 版本，并确认 Tampermonkey 已启用。</p>';
-                }
-            });
+            document.querySelectorAll('.demo-box').forEach(box => { if (box.querySelector('#gm-store-save')) box.innerHTML = '<p style="color:red;">❌ GM API 未暴露，请使用灵蝶 v7.3+。</p>'; });
         } else {
-            // --- 存储读写 ---
             document.getElementById('gm-store-save').addEventListener('click', () => {
-                const val = document.getElementById('gm-store-input').value;
-                GM_setValue('demoKey', val);
-                alert('已保存：' + val);
+                GM_setValue('demoKey', document.getElementById('gm-store-input').value);
+                alert('已保存');
             });
             document.getElementById('gm-store-load').addEventListener('click', () => {
-                const val = GM_getValue('demoKey', '没有保存的值');
-                document.getElementById('gm-store-result').textContent = val;
+                document.getElementById('gm-store-result').textContent = GM_getValue('demoKey', '无');
             });
             const saved = GM_getValue('demoKey', null);
             if (saved !== null) document.getElementById('gm-store-result').textContent = saved;
 
             document.getElementById('gm-notify-btn').addEventListener('click', () => {
-                const text = document.getElementById('gm-notify-text').value || '灵蝶通知';
-                if (typeof GM_notification === 'function') {
-                    GM_notification(text, 'ScriptWeaver 演示');
-                } else {
-                    alert('GM_notification 不可用');
-                }
+                const text = document.getElementById('gm-notify-text').value || '通知';
+                if (typeof GM_notification === 'function') GM_notification(text, '灵蝶');
+                else alert('通知不可用');
             });
 
             document.getElementById('gm-tab-btn').addEventListener('click', () => {
                 let url = document.getElementById('gm-tab-url').value.trim();
                 if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
-                if (typeof GM_openInTab === 'function') {
-                    GM_openInTab(url, { active: true });
-                } else {
-                    window.open(url, '_blank');
-                }
+                if (typeof GM_openInTab === 'function') GM_openInTab(url, { active: true });
+                else window.open(url, '_blank');
             });
 
             document.getElementById('gm-xhr-btn').addEventListener('click', () => {
-                const result = document.getElementById('gm-xhr-result');
-                result.textContent = '请求中…';
-                if (typeof GM_xmlhttpRequest !== 'function') {
-                    result.textContent = '❌ GM_xmlhttpRequest 不可用';
-                    return;
-                }
+                const res = document.getElementById('gm-xhr-result');
+                res.textContent = '请求中…';
+                if (typeof GM_xmlhttpRequest !== 'function') { res.textContent = '❌ 不可用'; return; }
                 GM_xmlhttpRequest({
                     method: 'GET',
                     url: 'https://jsonplaceholder.typicode.com/posts/1',
-                    onload: function(res) {
-                        try {
-                            const data = JSON.parse(res.responseText);
-                            result.textContent = JSON.stringify(data, null, 2);
-                        } catch(e) {
-                            result.textContent = '解析失败：' + e.message;
-                        }
-                    },
-                    onerror: function(e) {
-                        result.textContent = '请求错误';
-                    }
+                    onload(r) { try { res.textContent = JSON.stringify(JSON.parse(r.responseText), null, 2); } catch(e) { res.textContent = '解析失败'; } },
+                    onerror() { res.textContent = '网络错误'; }
                 });
             });
         }
     </script>
 
-    <!-- 块7：插件市场交互（增强版） -->
+    <!-- 块7：插件市场交互 -->
     <script type="x-tm-inline">
-        // 刷新插件列表
-        document.getElementById('refresh-plugins-btn').addEventListener('click', function() {
-            const listDiv = document.getElementById('plugin-list');
-            listDiv.textContent = '正在获取插件列表...';
-            if (typeof GM_xmlhttpRequest !== 'function') {
-                listDiv.textContent = '❌ GM_xmlhttpRequest 不可用';
-                return;
-            }
+        document.getElementById('refresh-plugins-btn').addEventListener('click', () => {
+            const list = document.getElementById('plugin-list');
+            list.textContent = '获取中…';
+            if (typeof GM_xmlhttpRequest !== 'function') { list.textContent = '❌ GM_xmlhttpRequest 不可用'; return; }
             GM_xmlhttpRequest({
                 method: 'GET',
                 url: 'https://wzmwayne.github.io/ScriptWeaver/plugins.json?t=' + Date.now(),
-                onload: function(res) {
-                    if (res.status === 200) {
+                onload(r) {
+                    if (r.status === 200) {
                         try {
-                            const data = JSON.parse(res.responseText);
+                            const data = JSON.parse(r.responseText);
                             const plugins = data.plugins || {};
-                            const aliases = Object.keys(plugins);
-                            if (aliases.length === 0) {
-                                listDiv.textContent = '⚠️ 映射表中暂无插件';
-                                return;
-                            }
-                            let html = '<strong>可用插件：</strong><ul>';
-                            aliases.forEach(alias => {
-                                html += '<li>' + alias + ' → ' + plugins[alias] + '</li>';
-                            });
-                            html += '</ul>';
-                            listDiv.innerHTML = html;
-                        } catch(e) {
-                            listDiv.textContent = '❌ 解析插件表失败: ' + e.message;
-                        }
-                    } else {
-                        listDiv.textContent = '❌ 获取失败，HTTP ' + res.status;
-                    }
+                            const keys = Object.keys(plugins);
+                            if (!keys.length) { list.textContent = '⚠️ 暂无插件'; return; }
+                            list.innerHTML = '<strong>可用插件：</strong><ul>' + keys.map(k => '<li>' + k + ' → ' + plugins[k] + '</li>').join('') + '</ul>';
+                        } catch(e) { list.textContent = '❌ 解析失败'; }
+                    } else list.textContent = '❌ HTTP ' + r.status;
                 },
-                onerror: function(e) {
-                    listDiv.textContent = '❌ 网络错误';
-                }
+                onerror() { list.textContent = '❌ 网络错误'; }
             });
         });
 
-        // 加载指定插件
-        document.getElementById('load-plugin-btn').addEventListener('click', function() {
+        document.getElementById('load-plugin-btn').addEventListener('click', () => {
             const alias = document.getElementById('plugin-alias-input').value.trim();
-            const statusEl = document.getElementById('plugin-load-status');
-            if (!alias) {
-                statusEl.textContent = '❌ 请输入插件别名';
-                statusEl.className = 'fail';
-                return;
-            }
-            if (typeof SW_loadPlugin !== 'function') {
-                statusEl.textContent = '❌ SW_loadPlugin 不可用，请升级到灵蝶 v7.3+';
-                statusEl.className = 'fail';
-                return;
-            }
-            statusEl.textContent = '⏳ 正在加载 ' + alias + '...';
-            statusEl.className = '';
-            SW_loadPlugin(alias, function(success, detail) {
-                if (success) {
-                    statusEl.textContent = '✅ 插件 ' + alias + ' 加载成功！';
-                    statusEl.className = 'pass';
-                } else {
-                    statusEl.textContent = '❌ 加载失败：' + detail;
-                    statusEl.className = 'fail';
-                }
+            const status = document.getElementById('plugin-load-status');
+            if (!alias) { status.textContent = '❌ 输入别名'; status.className = 'fail'; return; }
+            if (typeof SW_loadPlugin !== 'function') { status.textContent = '❌ SW_loadPlugin 不可用'; status.className = 'fail'; return; }
+            status.textContent = '⏳ 加载中…';
+            status.className = '';
+            SW_loadPlugin(alias, (success, detail) => {
+                if (success) { status.textContent = '✅ 插件 ' + alias + ' 已加载'; status.className = 'pass'; }
+                else { status.textContent = '❌ 失败：' + detail; status.className = 'fail'; }
             });
         });
     </script>
 
-    <p style="margin-top: 2rem; color: #888; font-size: 0.9em;">
-        💡 <strong>提示：</strong> 打开 Tampermonkey 中灵蝶脚本的<strong>调试模式</strong>（设置 <code>debug: true</code>），你将在右上角看到每个代码块执行时的详细过程。
-    </p>
+    <!-- 块8：跨页面遥控演示 -->
+    <script type="x-tm-inline">
+        // 注入代码
+        document.getElementById('cross-exec-btn').addEventListener('click', () => {
+            const target = document.getElementById('cross-target-code').value.trim() || '*';
+            const code = document.getElementById('cross-code').value.trim();
+            const status = document.getElementById('cross-exec-status');
+            if (!code) { status.textContent = '❌ 请输入代码'; status.className = 'fail'; return; }
+            if (typeof SW_crossExec !== 'function') { status.textContent = '❌ SW_crossExec 不可用，需要灵蝶 v7.7+'; status.className = 'fail'; return; }
+            status.textContent = '⏳ 正在发起（请查看确认框）…';
+            status.className = '';
+            SW_crossExec(code, target, (err, result) => {
+                if (err) { status.textContent = '❌ 错误：' + err.message; status.className = 'fail'; }
+                else { status.textContent = '✅ 回调：来自 ' + (result && result.executor || '未知') + ' - ' + (result && result.message || ''); status.className = 'pass'; }
+            });
+        });
+
+        // 注入插件
+        document.getElementById('cross-plugin-btn').addEventListener('click', () => {
+            const alias = document.getElementById('cross-plugin-alias').value.trim();
+            const target = document.getElementById('cross-target-plugin').value.trim() || '*';
+            const status = document.getElementById('cross-plugin-status');
+            if (!alias) { status.textContent = '❌ 输入插件别名'; status.className = 'fail'; return; }
+            if (typeof SW_crossLoadPlugin !== 'function') { status.textContent = '❌ SW_crossLoadPlugin 不可用，需要灵蝶 v7.7+'; status.className = 'fail'; return; }
+            status.textContent = '⏳ 正在发起…';
+            status.className = '';
+            SW_crossLoadPlugin(alias, target, (err, result) => {
+                if (err) { status.textContent = '❌ 错误：' + err.message; status.className = 'fail'; }
+                else { status.textContent = '✅ 回调：来自 ' + (result && result.executor || '未知') + ' - 插件已加载'; status.className = 'pass'; }
+            });
+        });
+    </script>
 </body>
 </html>
