@@ -7,6 +7,8 @@
     "@sw/back-to-top": "ui/back-to-top.js",
     "@sw/reading-progress": "ui/reading-progress.js",
     "@sw/smooth-scroll": "ui/smooth-scroll.js",
-    "@sw/copy-code": "ui/copy-code.js"
+    "@sw/copy-code": "ui/copy-code.js",
+    "@sw/clock": "tools/clock.js",
+    "@sw/timer": "tools/timer.js"
   }
 }
