@@ -147,7 +147,7 @@
     <!-- 8. 跨页面遥控（新增） -->
     <h2>8. 跨页面遥控 🎮</h2>
     <p>使用 <code>SW_crossExec</code> 或 <code>SW_crossLoadPlugin</code> 向其他已安装灵蝶的页面注入代码或插件。<br>
-       发起前会弹出全屏确认框，确保安全。需要灵蝶 v7.7 及以上版本。</p>
+       发起前会弹出全屏确认框，确保安全。需要灵蝶 v7.8 及以上版本。</p>
 
     <div class="demo-box">
         <strong>📨 注入代码</strong>
@@ -315,37 +315,28 @@
             });
         });
     </script>
-
-    <!-- 块8：跨页面遥控演示 -->
+<!-- 块8：跨页面遥控演示（v7.8 无回调，灵蝶自动 Toast 反馈） -->
     <script type="x-tm-inline">
-        // 注入代码
         document.getElementById('cross-exec-btn').addEventListener('click', () => {
             const target = document.getElementById('cross-target-code').value.trim() || '*';
             const code = document.getElementById('cross-code').value.trim();
             const status = document.getElementById('cross-exec-status');
             if (!code) { status.textContent = '❌ 请输入代码'; status.className = 'fail'; return; }
-            if (typeof SW_crossExec !== 'function') { status.textContent = '❌ SW_crossExec 不可用，需要灵蝶 v7.7+'; status.className = 'fail'; return; }
-            status.textContent = '⏳ 正在发起（请查看确认框）…';
-            status.className = '';
-            SW_crossExec(code, target, (err, result) => {
-                if (err) { status.textContent = '❌ 错误：' + err.message; status.className = 'fail'; }
-                else { status.textContent = '✅ 回调：来自 ' + (result && result.executor || '未知') + ' - ' + (result && result.message || ''); status.className = 'pass'; }
-            });
+            if (typeof SW_crossExec !== 'function') { status.textContent = '❌ SW_crossExec 不可用，需要灵蝶 v7.8+'; status.className = 'fail'; return; }
+            SW_crossExec(code, target);
+            status.textContent = '✅ 命令已发送（查看右上角 Toast 或调试窗口获取结果）';
+            status.className = 'pass';
         });
 
-        // 注入插件
         document.getElementById('cross-plugin-btn').addEventListener('click', () => {
             const alias = document.getElementById('cross-plugin-alias').value.trim();
             const target = document.getElementById('cross-target-plugin').value.trim() || '*';
             const status = document.getElementById('cross-plugin-status');
             if (!alias) { status.textContent = '❌ 输入插件别名'; status.className = 'fail'; return; }
-            if (typeof SW_crossLoadPlugin !== 'function') { status.textContent = '❌ SW_crossLoadPlugin 不可用，需要灵蝶 v7.7+'; status.className = 'fail'; return; }
-            status.textContent = '⏳ 正在发起…';
-            status.className = '';
-            SW_crossLoadPlugin(alias, target, (err, result) => {
-                if (err) { status.textContent = '❌ 错误：' + err.message; status.className = 'fail'; }
-                else { status.textContent = '✅ 回调：来自 ' + (result && result.executor || '未知') + ' - 插件已加载'; status.className = 'pass'; }
-            });
+            if (typeof SW_crossLoadPlugin !== 'function') { status.textContent = '❌ SW_crossLoadPlugin 不可用，需要灵蝶 v7.8+'; status.className = 'fail'; return; }
+            SW_crossLoadPlugin(alias, target);
+            status.textContent = '✅ 命令已发送（查看右上角 Toast 或调试窗口获取结果）';
+            status.className = 'pass';
         });
     </script>
 </body>
