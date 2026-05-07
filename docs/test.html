@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 远程脚本演示（指向一个不存在的 URL，灵蝶会提示加载失败） -->
+    <!-- 远程脚本演示（静态别名，会因不存在而失败） -->
     <meta name="tm-dynamic-script" content="https://example.com/remote-demo.js">
     <!-- 权限声明示例（灵蝶简化版会忽略，但可保留） -->
     <meta name="scriptweaver-permissions" content="xhr,storage">
@@ -29,6 +29,8 @@
         body.dark pre { background: #333; color: #ddd; }
         body.dark button { background: #444; border-color: #666; color: #eee; }
         body.dark button:hover { background: #555; }
+        .pass { color: #27ae60; font-weight: bold; }
+        .fail { color: #e74c3c; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -84,9 +86,9 @@
     <h2>5. 远程脚本加载（演示）</h2>
     <p>页面头部已声明一个远程脚本链接，灵蝶会自动尝试加载并执行。由于该地址不存在，你会看到加载失败的 Toast 提示（调试模式下）。</p>
 
-    <!-- ===== GM API 演示（新增） ===== -->
+    <!-- ===== GM API 演示 ===== -->
     <h2>6. GM API 演示</h2>
-    <p>以下按钮调用 <strong>灵蝶暴露的 GM 函数</strong>，请确保已安装 7.3 版本。</p>
+    <p>以下按钮调用 <strong>灵蝶暴露的 GM 函数</strong>，请确保已安装 7.3+ 版本。</p>
 
     <!-- 存储读写 -->
     <div class="demo-box">
@@ -126,6 +128,22 @@
             <button id="gm-xhr-btn">请求测试</button>
         </div>
         <pre id="gm-xhr-result" style="max-height: 150px; overflow-y: auto;">等待点击…</pre>
+    </div>
+
+    <!-- ===== 7. 插件市场与动态加载（新增） ===== -->
+    <h2>7. 插件市场 &amp; 动态加载</h2>
+    <div class="demo-box">
+        <strong>🧩 静态别名加载</strong>
+        <p>在 <code>&lt;head&gt;</code> 中使用 <code>&lt;meta name="tm-dynamic-script" content="@sw/dark-mode"&gt;</code> 可直接加载插件。</p>
+        <p class="note">（当前页面未设置该 meta，此功能在别的页面中可用）</p>
+    </div>
+
+    <div class="demo-box">
+        <strong>⚡ 动态加载插件（无需刷新）</strong>
+        <p>点击下方按钮，将调用 <code>SW_loadPlugin('@sw/dark-mode', callback)</code> 实时加载暗黑模式插件。</p>
+        <button id="load-plugin-btn">加载暗黑模式插件</button>
+        <p id="plugin-load-status" style="margin-top: 0.5rem;">等待操作…</p>
+        <p class="note">如果暗黑模式插件加载成功，右上角会出现切换按钮；若失败则显示错误原因。</p>
     </div>
 
     <!-- ===== 内嵌代码块集合（所有交互逻辑） ===== -->
@@ -221,7 +239,7 @@
         });
     </script>
 
-    <!-- 块6：GM API 演示（新增） -->
+    <!-- 块6：GM API 演示 -->
     <script type="x-tm-inline">
         // 检查 GM 函数是否可用
         if (typeof GM_setValue === 'undefined') {
@@ -295,8 +313,31 @@
         }
     </script>
 
+    <!-- 块7：动态加载插件演示（新增） -->
+    <script type="x-tm-inline">
+        document.getElementById('load-plugin-btn').addEventListener('click', function() {
+            const statusEl = document.getElementById('plugin-load-status');
+            if (typeof SW_loadPlugin !== 'function') {
+                statusEl.textContent = '❌ SW_loadPlugin 不可用，请升级到灵蝶 v7.3+ 并确保已启用插件市场。';
+                statusEl.className = 'fail';
+                return;
+            }
+            statusEl.textContent = '⏳ 正在加载插件...';
+            statusEl.className = '';
+            SW_loadPlugin('@sw/dark-mode', function(success, detail) {
+                if (success) {
+                    statusEl.textContent = '✅ 暗黑模式插件加载成功！右上角已出现切换按钮。';
+                    statusEl.className = 'pass';
+                } else {
+                    statusEl.textContent = '❌ 加载失败：' + detail;
+                    statusEl.className = 'fail';
+                }
+            });
+        });
+    </script>
+
     <p style="margin-top: 2rem; color: #888; font-size: 0.9em;">
-        💡 <strong>提示：</strong> 打开 Tampermonkey 中灵蝶脚本的<strong>调试模式</strong>（设置 <code>debug: true</code>），你将在右上角看到每个代码块执行时的 Toast 提示。
+        💡 <strong>提示：</strong> 打开 Tampermonkey 中灵蝶脚本的<strong>调试模式</strong>（设置 <code>debug: true</code>），你将在右上角看到每个代码块执行时的详细过程。
     </p>
 </body>
 </html>
